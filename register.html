@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>회원가입 페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+    <style>
+        .register-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .register-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+        }
+        .success-message {
+            color: green;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="register-container">
+            <h2>회원가입</h2>
+            <form id="register-form">
+                <div class="mb-3">
+                    <label for="username" class="form-label">사용자 이름</label>
+                    <input type="text" class="form-control" id="username" placeholder="사용자 이름을 입력하세요">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">이메일 주소</label>
+                    <input type="email" class="form-control" id="email" placeholder="이메일을 입력하세요">
+                    <div class="error-message" id="email-error-message"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <input type="password" class="form-control" id="password" placeholder="비밀번호를 입력하세요">
+                </div>
+                <div class="mb-3">
+                    <label for="confirm-password" class="form-label">비밀번호 확인</label>
+                    <input type="password" class="form-control" id="confirm-password" placeholder="비밀번호를 다시 입력하세요">
+                    <div class="error-message" id="password-error-message"></div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">회원가입</button>
+                <div class="success-message" id="success-message" style="display: none;">회원가입에 성공했습니다. 로그인 페이지로 이동합니다.</div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('register-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // 사용자가 입력한 값 가져오기
+            const usernameInput = document.getElementById('username').value;
+            const emailInput = document.getElementById('email').value;
+            const passwordInput = document.getElementById('password').value;
+            const confirmPasswordInput = document.getElementById('confirm-password').value;
+
+            // 이메일 양식이 적합한지 확인
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(emailInput)) {
+                document.getElementById('email-error-message').innerText = '적합한 이메일 주소를 입력하세요.';
+                return;
+            }
+
+            // 비밀번호와 비밀번호 확인이 일치하는지 확인
+            if (passwordInput !== confirmPasswordInput) {
+                document.getElementById('password-error-message').innerText = '비밀번호가 일치하지 않습니다.';
+                return;
+            }
+
+            if (!usernameInput || !emailInput || !passwordInput || !confirmPasswordInput) {
+                document.getElementById('confirm-password-error-message').innerText = '';
+                document.getElementById('password-error-message').innerText = '';
+                document.getElementById('email-error-message').innerText = '';
+                document.getElementById('username-error-message').innerText = '입력란에 정보를 기입해 주세요.';
+                return;
+            }
+
+            // 로컬 스토리지에 사용자 정보 저장
+            localStorage.setItem('username', usernameInput);
+            localStorage.setItem('email', emailInput);
+            localStorage.setItem('password', passwordInput);
+
+            // 회원가입 성공 시 메시지 표시 및 로그인 페이지로 이동
+            document.getElementById('success-message').style.display = 'block';
+            setTimeout(function () {
+                window.location.href = 'login.html';
+            }, 3000);
+        });
+        const firebaseConfig = {
+            apiKey: "AIzaSyCDL8XXTcUtGJ1wDWVQ-M1OG_M_DQmY9EQ",
+            authDomain: "epigarden-e7aca.firebaseapp.com",
+            databaseURL: "https://epigarden-e7aca-default-rtdb.firebaseio.com",
+            projectId: "epigarden-e7aca",
+            storageBucket: "epigarden-e7aca.appspot.com",
+            messagingSenderId: "759171953603",
+            appId: "1:759171953603:web:06049731ced3d4c8b28376",
+            measurementId: "G-E31S2V0YJ0"
+        };
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+
+        // Firebase 데이터베이스 참조
+        const database = firebase.database();
+
+        document.getElementById('register-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('username').value;
+            const emailInput = document.getElementById('email').value;
+            const passwordInput = document.getElementById('password').value;
+            const confirmPasswordInput = document.getElementById('confirm-password').value;
+        });
+
+        const newUserRef = database.ref('users').push();
+            newUserRef.set({
+                username: usernameInput,
+                email: emailInput,
+                password: passwordInput
+            });
+    </script>
+</body>
+
+</html>
